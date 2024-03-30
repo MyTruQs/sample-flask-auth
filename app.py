@@ -52,7 +52,7 @@ def create_user():
 
     if username and password:
         hashed_password = bcrypt.hashpw(str.encode(password), bcrypt.gensalt())
-        user = User(username=username, password=hashed_password, role='admin')
+        user = User(username=username, password=hashed_password, role='user')
         db.session.add(user)
         db.session.commit()
         return jsonify({"message": "Usuario cadastrado com sucesso."})
@@ -77,7 +77,9 @@ def update_user(id_user):
         return jsonify({"message": "Operação não permitida."}), 403
     
     if user and data.get("password"):
-        user.password = data.get("password")
+        psw = data.get("password")
+        hashed_password = bcrypt.hashpw(str.encode(psw), bcrypt.gensalt())
+        user.password = hashed_password
         db.session.commit()
         return jsonify({"message": f"Usuário {id_user} atualizado com sucesso."})
     return jsonify({"message": "Usuario não encontrado."}), 404
